@@ -13,13 +13,13 @@ public class Spawn : ICommand
 {
     public string Command => "spawn";
     public string[] Aliases => Array.Empty<string>();
-    public string Description => "command para spawn customrole";
+    public string Description => "Comando para spawn customrole";
 
     public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
     {
         Player executor = Player.Get(sender);
 
-        if (executor != null && !executor.HasPermissions("customroles.spawn"))
+        if (executor != null && !executor.HasPermissions("customitems.give"))
         {
             response = Main.Instance.Config.DontHaveAccess;
             return false;
@@ -84,13 +84,9 @@ public class Spawn : ICommand
             return false;
         }
 
-        foreach (var target in targets)
+        foreach (Player target in targets)
         {
-            if (!RoleManager.AssignRole(target, role, out string reason))
-            {
-                response = $"\n{target.Nickname}: {reason}";
-                return true;
-            }
+            role.AddRole(target);
         }
 
         response = $"Gave {role.Name} to {targets.Count} player(s).";

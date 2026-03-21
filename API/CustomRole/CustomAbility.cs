@@ -8,14 +8,14 @@ using UnityEngine;
 
 namespace CustomRolesCrimsonBreach.API.CustomRole;
 
-public abstract class CustomAbility
+public abstract class CustomHability
 {
-    public static HashSet<CustomAbility> Registered { get; } = new();
-    private static readonly Dictionary<uint, CustomAbility?> idLookupTable = new();
-    private static Dictionary<string, CustomAbility?> stringLookupTable = new();
+    public static HashSet<CustomHability> Registered { get; } = new();
+    public virtual HashSet<uint> TrackedSerials { get; } = new();
+    private static readonly Dictionary<uint, CustomHability?> idLookupTable = new();
+    private static Dictionary<string, CustomHability?> stringLookupTable = new();
+    private readonly Dictionary<string, float> _lastUseTime = new();
     public static event EventHandler<PlayerUseHability>? PlayerUsedAbility;
-    Dictionary<uint, float> lastUseTime;
-
     public abstract uint ID { get; }
     public abstract string Name { get; }
     public abstract float Cooldown { get; }
@@ -23,61 +23,47 @@ public abstract class CustomAbility
 
     public abstract bool NeedCooldown { get; }
 
-    public Dictionary<uint, float> RealCooldown = new Dictionary<uint, float>();
+    public Dictionary<Player, float> RealCooldown = new Dictionary<Player, float>();
     public virtual bool TryRegister()
     {
         if (Registered.Any(c => c.ID == ID)) return false;
 
-        lock (Registered)
-        {
-            Registered.Add(this);
-        }
-
+        Registered.Add(this);
         idLookupTable.Add(ID, this);
-
-        if (!stringLookupTable.ContainsKey(Name))
-            stringLookupTable.Add(Name, this);
-
+        stringLookupTable.Add(Name, this);
         return true;
     }
 
     public virtual bool TryUnregister()
     {
-        Registered.Remove(this);
-        idLookupTable.Remove(ID);
-        stringLookupTable.Remove(Name);
         return Registered.Remove(this);
     }
 
-    public static IEnumerable<CustomAbility> RegisterSkills()
+    public static IEnumerable<CustomHability> RegisterSkills()
     {
-        List<CustomAbility> items = new();
+        List<CustomHability> items = new();
         Assembly assembly = Assembly.GetExecutingAssembly();
 
         foreach (Type type in assembly.GetTypes())
         {
-            if (!type.IsSubclassOf(typeof(CustomAbility)) || type.IsAbstract)
+            if (!type.IsSubclassOf(typeof(CustomHability)) || type.IsAbstract)
                 continue;
 
             if (Registered.Any(r => r.GetType() == type))
                 continue;
 
-            try
+            CustomHability instance = (CustomHability)Activator.CreateInstance(type)!;
+
+            if (instance.TryRegister())
             {
-                var instance = (CustomAbility)Activator.CreateInstance(type)!;
-                if (instance.TryRegister())
-                    items.Add(instance);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"Error creating ability {type.Name}: {e}");
+                items.Add(instance);
             }
         }
 
         return items;
     }
 
-    public static IEnumerable<CustomAbility> UnRegisterSkills()
+    public static IEnumerable<CustomHability> UnRegisterSkills()
     {
         var items = Registered.ToList();
         foreach (var item in items)
@@ -85,64 +71,41 @@ public abstract class CustomAbility
         return items;
     }
 
-    public static CustomAbility? Get(string name) => stringLookupTable.TryGetValue(name, out var ability) ? ability : null;
-    public static CustomAbility? Get(uint ID) => idLookupTable.TryGetValue(ID, out var ability) ? ability : null;
-    public static CustomAbility? Get(CustomAbility ability) => Registered.FirstOrDefault(a => a.Equals(ability));
+    public static CustomHability Get(string name) => stringLookupTable.TryGetValue(name, out var ability) ? ability : null;
+    public static CustomHability Get(uint ID) => idLookupTable.TryGetValue(ID, out var ability) ? ability : null;
+    public static CustomHability? Get(CustomHability ability) => Registered.FirstOrDefault(a => a.Equals(ability));
 
 
     public virtual void OnUseWithCooldown(Player player)
     {
-        uint id = player.NetworkId;
-
-        if (!NeedCooldown)
+        if (!RealCooldown.ContainsKey(player) || RealCooldown[player] <= 0)
         {
-            OnUse(player);
-            return;
-        }
+            RealCooldown[player] = Cooldown;
 
-        if (!lastUseTime.TryGetValue(id, out float lastTime))
-        {
-            lastUseTime[id] = Time.time;
             OnUse(player);
-            return;
-        }
 
-        float timePassed = Time.time - lastTime;
-        float remaining = Cooldown - timePassed;
-
-        if (remaining <= 0)
-        {
-            lastUseTime[id] = Time.time;
-            OnUse(player);
+            Timing.RunCoroutine(CooldownCoroutine(player));
         }
         else
         {
-            int minutes = Mathf.FloorToInt(remaining / 60f);
-            int seconds = Mathf.CeilToInt(remaining % 60f);
+            float timeRemaining = Mathf.Ceil(RealCooldown[player]);
+            int minutes = Mathf.FloorToInt(timeRemaining / 60f);
+            int seconds = Mathf.FloorToInt(timeRemaining % 60f);
 
-            player.SendHint(
-                Main.Instance.Config.HabilityCooldownMessage
-                    .Replace("MINUTES", minutes.ToString())
-                    .Replace("SECONDS", seconds.ToString()),
-                5f
-            );
+            player.SendHint(Main.Instance.Config.HabilityCooldownMessage.Replace("MINUTES", minutes.ToString()).Replace("SECONDS", seconds.ToString()), 5f);
         }
     }
 
-    /*private IEnumerator<float> CooldownCoroutine(Player player)
+    private IEnumerator<float> CooldownCoroutine(Player player)
     {
-        while (RealCooldown.ContainsKey(player.NetworkId) && RealCooldown[player.NetworkId] > 0)
+        while (RealCooldown[player] > 0)
         {
-            RealCooldown[player.NetworkId] -= 1f;
-
+            RealCooldown[player] -= 1f;
             yield return Timing.WaitForSeconds(1f);
         }
 
-        if (RealCooldown.ContainsKey(player.NetworkId))
-            RealCooldown.Remove(player.NetworkId);
-
         player.SendHint(Main.Instance.Config.HabilityCooldownSuccesfull, 5f);
-    }*/
+    }
 
     public virtual void OnUse(Player player)
     {

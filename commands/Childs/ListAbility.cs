@@ -11,15 +11,15 @@ public class ListAbility : ICommand
 {
     public string Command => "abilityList";
     public string[] Aliases => new[] { "abl" };
-    public string Description => "Lists all registered custom abilities.";
+    public string Description => "Lists all registered custom items.";
 
     public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
     {
-        var items = CustomAbility.Registered;
+        var items = CustomHability.Registered;
 
         if (!items.Any())
         {
-            response = "There are no custom abilities registered.";
+            response = "There are no custom items registered.";
             return false;
         }
 

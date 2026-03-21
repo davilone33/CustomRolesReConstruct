@@ -81,7 +81,6 @@
     <Compile Include="API\Extension\PlayerCustomRole.cs" />
     <Compile Include="API\Extension\ExtensionPlayer.cs" />
     <Compile Include="API\PlayerUseHability.cs" />
-    <Compile Include="API\RoleManager.cs" />
     <Compile Include="API\SpawningCustomRole.cs" />
     <Compile Include="commands\Childs\ListAbility.cs" />
     <Compile Include="commands\Childs\List.cs" />
