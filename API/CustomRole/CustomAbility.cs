@@ -8,12 +8,12 @@ using UnityEngine;
 
 namespace CustomRolesCrimsonBreach.API.CustomRole;
 
-public abstract class CustomHability
+public abstract class CustomAbility
 {
-    public static HashSet<CustomHability> Registered { get; } = new();
+    public static HashSet<CustomAbility> Registered { get; } = new();
     public virtual HashSet<uint> TrackedSerials { get; } = new();
-    private static readonly Dictionary<uint, CustomHability?> idLookupTable = new();
-    private static Dictionary<string, CustomHability?> stringLookupTable = new();
+    private static readonly Dictionary<uint, CustomAbility?> idLookupTable = new();
+    private static Dictionary<string, CustomAbility?> stringLookupTable = new();
     private readonly Dictionary<string, float> _lastUseTime = new();
     public static event EventHandler<PlayerUseHability>? PlayerUsedAbility;
     public abstract uint ID { get; }
@@ -39,20 +39,20 @@ public abstract class CustomHability
         return Registered.Remove(this);
     }
 
-    public static IEnumerable<CustomHability> RegisterSkills()
+    public static IEnumerable<CustomAbility> RegisterSkills()
     {
-        List<CustomHability> items = new();
+        List<CustomAbility> items = new();
         Assembly assembly = Assembly.GetExecutingAssembly();
 
         foreach (Type type in assembly.GetTypes())
         {
-            if (!type.IsSubclassOf(typeof(CustomHability)) || type.IsAbstract)
+            if (!type.IsSubclassOf(typeof(CustomAbility)) || type.IsAbstract)
                 continue;
 
             if (Registered.Any(r => r.GetType() == type))
                 continue;
 
-            CustomHability instance = (CustomHability)Activator.CreateInstance(type)!;
+            CustomAbility instance = (CustomAbility)Activator.CreateInstance(type)!;
 
             if (instance.TryRegister())
             {
@@ -63,7 +63,7 @@ public abstract class CustomHability
         return items;
     }
 
-    public static IEnumerable<CustomHability> UnRegisterSkills()
+    public static IEnumerable<CustomAbility> UnRegisterSkills()
     {
         var items = Registered.ToList();
         foreach (var item in items)
@@ -71,9 +71,9 @@ public abstract class CustomHability
         return items;
     }
 
-    public static CustomHability Get(string name) => stringLookupTable.TryGetValue(name, out var ability) ? ability : null;
-    public static CustomHability Get(uint ID) => idLookupTable.TryGetValue(ID, out var ability) ? ability : null;
-    public static CustomHability? Get(CustomHability ability) => Registered.FirstOrDefault(a => a.Equals(ability));
+    public static CustomAbility Get(string name) => stringLookupTable.TryGetValue(name, out var ability) ? ability : null;
+    public static CustomAbility Get(uint ID) => idLookupTable.TryGetValue(ID, out var ability) ? ability : null;
+    public static CustomAbility? Get(CustomAbility ability) => Registered.FirstOrDefault(a => a.Equals(ability));
 
 
     public virtual void OnUseWithCooldown(Player player)

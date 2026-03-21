@@ -25,8 +25,8 @@ public abstract class CustomRole
     public abstract uint Id { get; }
     public abstract RoleTypeId BaseRole { get; }
     public abstract float SpawnPercentage { get; }
-    public abstract Vector3 Scale { get; set; }
-    public abstract SpawnProperties SpawnProperties { get; set; }
+    public virtual Vector3 Scale { get; } = Vector3.one;
+    public abstract SpawnProperties SpawnProperties { get; }
 
     public virtual bool DisplayRoleMessage { get; set; } = true; 
     public virtual bool KeepRoleOnEscape { get; set; } = false; 
@@ -34,7 +34,7 @@ public abstract class CustomRole
     public virtual List<string> Inventory { get; set; } = new();
     public virtual Dictionary<ItemType, ushort> AmmoItems { get; set; } = new();
 
-    public virtual CustomHability CustomHability { get; set; }
+    public virtual CustomAbility CustomHability { get; set; }
 
     public virtual int Health { get; set; } = 100; 
     public virtual int SpawnNumber { get; set; } = 0; 

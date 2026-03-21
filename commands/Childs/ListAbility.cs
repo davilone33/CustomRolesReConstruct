@@ -15,7 +15,7 @@ public class ListAbility : ICommand
 
     public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
     {
-        var items = CustomHability.Registered;
+        var items = CustomAbility.Registered;
 
         if (!items.Any())
         {
