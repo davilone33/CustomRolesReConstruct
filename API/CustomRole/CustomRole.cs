@@ -16,7 +16,6 @@ namespace CustomRolesCrimsonBreach.API.CustomRole;
 
 public abstract class CustomRole
 {
-    protected static Dictionary<string, HashSet<CustomRole>> _players = new();
 
     public event EventHandler<SpawningCustomRole>? Spawning;
 
@@ -25,8 +24,8 @@ public abstract class CustomRole
     public abstract uint Id { get; }
     public abstract RoleTypeId BaseRole { get; }
     public abstract float SpawnPercentage { get; }
-    public abstract Vector3 Scale { get; set; }
-    public abstract SpawnProperties SpawnProperties { get; set; }
+    public virtual Vector3 Scale => Vector3.one;
+    public abstract SpawnProperties SpawnProperties { get; }
 
     public virtual bool DisplayRoleMessage { get; set; } = true; 
     public virtual bool KeepRoleOnEscape { get; set; } = false; 
@@ -34,7 +33,7 @@ public abstract class CustomRole
     public virtual List<string> Inventory { get; set; } = new();
     public virtual Dictionary<ItemType, ushort> AmmoItems { get; set; } = new();
 
-    public virtual CustomHability CustomHability { get; set; }
+    public virtual CustomAbility? CustomHability { get; set; }
 
     public virtual int Health { get; set; } = 100; 
     public virtual int SpawnNumber { get; set; } = 0; 
@@ -72,6 +71,7 @@ public abstract class CustomRole
         LabApi.Events.Handlers.ServerEvents.RoundEnded += OnRoundEnd;
         LabApi.Events.Handlers.PlayerEvents.ChangedRole += PlayerChangeRole;
         LabApi.Events.Handlers.PlayerEvents.Spawned += AddRoleEvent;
+        LabApi.Events.Handlers.PlayerEvents.Left += OnPlayerLeft;
     }
 
     public virtual void UnEventsCustom()
@@ -86,11 +86,12 @@ public abstract class CustomRole
         LabApi.Events.Handlers.ServerEvents.RoundEnded -= OnRoundEnd;
         LabApi.Events.Handlers.PlayerEvents.ChangedRole -= PlayerChangeRole;
         LabApi.Events.Handlers.PlayerEvents.Spawned -= AddRoleEvent;
+        LabApi.Events.Handlers.PlayerEvents.Left -= OnPlayerLeft;
     }
 
     private void OnPlayerHurt(PlayerHurtingEventArgs ev) 
     {
-        if (!HasRole(ev.Player, this)) return;
+        if (!RoleManager.HasRole(ev.Player)) return;
 
         if (ev.Player == null) return;
         if (ev.Attacker == null) return;
@@ -104,7 +105,7 @@ public abstract class CustomRole
 
     private void OnPlagueHurting(Scp049AttackingEventArgs ev) 
     {
-        if (!HasRole(ev.Player, this)) return;
+        if (!RoleManager.HasRole(ev.Player)) return;
 
         if (ev.Player ==  null) return;
         if (RoleTeam == Team.OtherAlive) return;
@@ -140,17 +141,7 @@ public abstract class CustomRole
 
     public virtual void AddRole(Player player)
     {
-        if (HasRole(player, this)) return;
-
-        Logger.Debug($"{Name}: Assingning role to {player.Nickname}, Role instance: {GetHashCode()}", Main.Instance.Config.debug);
-
-        if (!_players.TryGetValue(player.UserId, out var roles))
-        {
-            roles = new HashSet<CustomRole>();
-            _players[player.UserId] = roles;
-        }
-
-        roles.Add(this);
+        Logger.Debug($"{Name}: Assigning role to {player.Nickname}", Main.Instance.Config.debug);
 
         if (DisplayRoleMessage)
         {
@@ -167,7 +158,6 @@ public abstract class CustomRole
                     player.SendBroadcast(message, 10);
                     break;
 
-                case "both":
                 default:
                     player.SendHint(message, 10);
                     player.SendBroadcast(message, 10);
@@ -177,7 +167,8 @@ public abstract class CustomRole
 
         if (!GiveOnlyAbility)
         {
-            player.SetRole(BaseRole);
+            if (player.Role != BaseRole)
+                player.SetRole(BaseRole);
 
             var spawnPoint = GetRandomSpawnPoint();
             if (spawnPoint != null)
@@ -187,13 +178,17 @@ public abstract class CustomRole
             }
         }
 
-        foreach (KeyValuePair<ItemType, ushort> ammo in AmmoItems)
+        foreach (string itemName in Inventory)
+        {
+            TryAddItem(player, itemName);
+        }
+
+        foreach (var ammo in AmmoItems)
         {
             player.AddAmmo(ammo.Key, ammo.Value);
         }
 
-        Logger.Debug($"{Name}: Item added {player.Nickname}", Main.Instance.Config.debug);
-
+        Logger.Debug($"{Name}: Role applied to {player.Nickname}", Main.Instance.Config.debug);
     }
 
     public void ReapplyInventory(Player player)
@@ -201,11 +196,6 @@ public abstract class CustomRole
         foreach (Item item in player.Items)
             player.RemoveItem(item);
 
-        foreach (string itemName in Inventory)
-        {
-            Logger.Debug($"{Name}: Reapplying {itemName} to inventory.", Main.Instance.Config.debug);
-            TryAddItem(player, itemName);
-        }
 
         foreach (var ammo in AmmoItems)
         {
@@ -215,7 +205,7 @@ public abstract class CustomRole
 
     private void AddRoleEvent(PlayerSpawnedEventArgs ev)
     {
-        if (!HasRole(ev.Player, this)) return;
+        if (!RoleManager.HasRole(ev.Player)) return;
 
         MEC.Timing.CallDelayed(0.1f, () =>
         {
@@ -224,7 +214,7 @@ public abstract class CustomRole
             ev.Player.Scale = this.Scale;
             ev.Player.MaxHealth = this.Health;
             ev.Player.Health = this.Health;
-            if (HasRole(ev.Player, this))
+            if (RoleManager.HasRole(ev.Player))
             {
                 ev.Player.CustomInfo = $"{this.CustomInfo}";
             } 
@@ -237,6 +227,11 @@ public abstract class CustomRole
     public virtual void RoleAdded(Player player) { }
     private SpawnPoint? GetRandomSpawnPoint()
     {
+        var points = SpawnProperties?.StaticSpawnPoints;
+        if (points == null || points.Count == 0)
+            return null;
+
+
         if (SpawnProperties == null || SpawnProperties.StaticSpawnPoints.Count == 0)
             return null;
 
@@ -259,20 +254,16 @@ public abstract class CustomRole
             CustomItemsAPI.TryGiveCustomItem(itemName, player);
 
         Logger.Debug($"{Name}: TryAddItem error. {itemName} its not valid.", Main.Instance.Config.debug);
-        return false;
+        return CustomItemsAPI.TryGiveCustomItem(itemName, player);
     }
     public virtual void RemoveRole(Player player)
     {
-        if (!_players.TryGetValue(player.UserId, out var roles)) return;
-
-        if (!roles.Remove(this)) return;
-
-        if (roles.Count == 0)
-            _players.Remove(player.UserId);
-
-        if (DisplayRoleMessage) 
+        if (DisplayRoleMessage)
         {
-            player.SendHint(Main.Instance.Config.RoleRemoved.Replace("%name%", Name), 10);
+            player.SendHint(
+                Main.Instance.Config.RoleRemoved.Replace("%name%", Name),
+                10
+            );
         }
 
         RemovedRole(player);
@@ -280,16 +271,11 @@ public abstract class CustomRole
     }
 
     public virtual void RemovedRole(Player player) { }
-
-    public static bool HasRole(Player player, CustomRole role)
-    {
-        return _players.TryGetValue(player.UserId, out var roles) && roles.Contains(role);
-    }
     public static CustomRole GetRole(int id) => CustomRoleHandler.Registered.FirstOrDefault(r => r.Id == id);
     public static CustomRole GetRole(Type type) => CustomRoleHandler.Registered.FirstOrDefault(r => r.GetType() == type);
     public static CustomRole GetRole(Player player)
     {
-        return CustomRoleHandler.Registered.FirstOrDefault(role => CustomRole.HasRole(player, role));
+        return CustomRoleHandler.Registered.FirstOrDefault(role => RoleManager.HasRole(player));
     }
     public virtual void HandleRoleChange(Player player, RoleTypeId newRole)
     {
@@ -297,6 +283,11 @@ public abstract class CustomRole
         {
             RemoveRole(player);
         }
+    }
+
+    private void OnPlayerLeft(PlayerLeftEventArgs ev)
+    {
+        RoleManager.RemoveRole(ev.Player);
     }
 
     protected virtual void OnAssigned(Player player) { }

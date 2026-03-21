@@ -30,6 +30,9 @@ public class Main : Plugin<Config>
         LabApi.Events.Handlers.PlayerEvents.ChangedRole += playerHandler.OnChangedRole;
         LabApi.Events.Handlers.ServerEvents.WaitingForPlayers += OnWaitingForPlayers;
 
+        LabApi.Events.Handlers.ServerEvents.RoundStarted += playerHandler.OnRoundStart;
+        LabApi.Events.Handlers.ServerEvents.RoundEnded += playerHandler.OnRoundEnd;
+
         Settings.Activate();
     }
 
@@ -40,6 +43,9 @@ public class Main : Plugin<Config>
         LabApi.Events.Handlers.PlayerEvents.ChangedRole -= playerHandler.OnChangedRole;
         LabApi.Events.Handlers.PlayerEvents.Death -= playerHandler.OnKillDeath;
         LabApi.Events.Handlers.ServerEvents.WaitingForPlayers -= OnWaitingForPlayers;
+
+        LabApi.Events.Handlers.ServerEvents.RoundStarted -= playerHandler.OnRoundStart;
+        LabApi.Events.Handlers.ServerEvents.RoundEnded -= playerHandler.OnRoundEnd;
 
         playerHandler = null;
         Settings = null;

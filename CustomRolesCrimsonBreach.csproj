@@ -32,23 +32,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony, Version=2.4.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Lib.Harmony.2.4.1\lib\net48\0Harmony.dll</HintPath>
+    <Reference Include="0Harmony, Version=2.4.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Lib.Harmony.2.4.2\lib\net48\0Harmony.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="CommandSystem.Core">
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\CommandSystem.Core.dll</HintPath>
     </Reference>
-    <Reference Include="LabApi, Version=1.1.4.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>packages\Northwood.LabAPI.1.1.4\lib\net48\LabApi.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="LabApi, Version=1.1.5.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>packages\Northwood.LabAPI.1.1.5\lib\net48\LabApi.dll</HintPath>
     </Reference>
     <Reference Include="Mirror">
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\Mirror.dll</HintPath>
@@ -75,7 +72,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="API\CustomRole\CustomHability.cs" />
+    <Compile Include="API\CustomRole\CustomAbility.cs" />
     <Compile Include="API\CustomRole\CustomRole.cs" />
     <Compile Include="API\CustomRole\RoomUtils.cs" />
     <Compile Include="API\CustomRole\SpawnAPI\RoomSpawnPoint.cs" />
@@ -84,6 +81,7 @@
     <Compile Include="API\Extension\PlayerCustomRole.cs" />
     <Compile Include="API\Extension\ExtensionPlayer.cs" />
     <Compile Include="API\PlayerUseHability.cs" />
+    <Compile Include="API\RoleManager.cs" />
     <Compile Include="API\SpawningCustomRole.cs" />
     <Compile Include="commands\Childs\ListAbility.cs" />
     <Compile Include="commands\Childs\List.cs" />
