@@ -140,60 +140,82 @@ public abstract class CustomRole
 
     public virtual void AddRole(Player player)
     {
-        if (HasRole(player, this)) return;
+        if (player == null || HasRole(player, this)) return;
 
-        Logger.Debug($"{Name}: Assingning role to {player.Nickname}, Role instance: {GetHashCode()}", Main.Instance.Config.debug);
+        Logger.Debug($"{Name}: Assigning to {player.Nickname}", Main.Instance.Config.debug);
 
         if (!_players.TryGetValue(player.UserId, out var roles))
         {
             roles = new HashSet<CustomRole>();
             _players[player.UserId] = roles;
         }
-
         roles.Add(this);
-
-        if (DisplayRoleMessage)
-        {
-            string message = Main.Instance.Config.RoleAdded.Replace("%name%", Name);
-            string mode = Main.Instance.Config.ShowMessage.ToLower();
-
-            switch (mode)
-            {
-                case "hint":
-                    player.SendHint(message, 10);
-                    break;
-
-                case "broadcast":
-                    player.SendBroadcast(message, 10);
-                    break;
-
-                case "both":
-                default:
-                    player.SendHint(message, 10);
-                    player.SendBroadcast(message, 10);
-                    break;
-            }
-        }
 
         if (!GiveOnlyAbility)
         {
-            player.SetRole(BaseRole);
+            if (player.Role != BaseRole)
+            {
+                player.SetRole(BaseRole);
+            }
+        }
+
+        MEC.Timing.CallDelayed(0.4f, () =>
+        {
+            if (player == null || player.GameObject == null) return;
+
+            player.ClearInventory();
 
             var spawnPoint = GetRandomSpawnPoint();
             if (spawnPoint != null)
             {
                 player.Position = RoomUtils.GetSpawnPosition(spawnPoint);
-                player.Rotation = spawnPoint.Rotation;
             }
-        }
 
-        foreach (KeyValuePair<ItemType, ushort> ammo in AmmoItems)
+            player.Scale = this.Scale;
+            player.MaxHealth = this.Health;
+            player.Health = this.Health;
+            player.CustomInfo = this.CustomInfo;
+
+            foreach (KeyValuePair<ItemType, ushort> ammo in AmmoItems)
+            {
+                player.AddAmmo(ammo.Key, ammo.Value);
+            }
+
+            ReapplyInventory(player);
+
+            Logger.Debug($"{Name}: Equipment and statistics applied to {player.Nickname}", Main.Instance.Config.debug);
+
+
+            string mode = Main.Instance.Config.ShowMessage.ToLower();
+
+            EnviarMensajeRol(player, mode);
+            OnAssigned(player);
+            RoleAdded(player);
+        });
+    }
+
+    private void EnviarMensajeRol(Player player, string config)
+    {
+        if (!DisplayRoleMessage) return;
+
+        string message = Main.Instance.Config.RoleAdded.Replace("%name%", Name);
+
+        switch (config)
         {
-            player.AddAmmo(ammo.Key, ammo.Value);
+            case "hint":
+                player.SendHint(message, 10);
+                break;
+
+            case "broadcast":
+                player.SendBroadcast(message, 10);
+                break;
+
+            case "both":
+            default:
+                player.SendHint(message, 10);
+                player.SendBroadcast(message, 10);
+                break;
         }
-
-        Logger.Debug($"{Name}: Item added {player.Nickname}", Main.Instance.Config.debug);
-
     }
 
     public void ReapplyInventory(Player player)

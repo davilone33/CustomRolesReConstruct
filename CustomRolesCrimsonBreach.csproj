@@ -7,8 +7,8 @@
     <ProjectGuid>{2892A6A5-D02E-4ED0-83F9-3407A97DCDCD}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CustomRolesCrimsonBreach</RootNamespace>
-    <AssemblyName>CustomRolesCrimsonBreach</AssemblyName>
+    <RootNamespace>CustomRolesReConstruct</RootNamespace>
+    <AssemblyName>CustomRoles-ReConstruct</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
