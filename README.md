@@ -7,6 +7,14 @@ A API to make a CustomRoles and CustomHabilitys for LabApi
 > [CustomItemsAPI](https://github.com/SlejmUr/CustomItemsAPI).  
 > (It's not obligatory)
 
+
+# Permissions
+```
+customroles.spawn
+customroles.list
+customroles.listability
+
+```
 # Commands
 ```
 .useskill
