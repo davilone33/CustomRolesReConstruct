@@ -1,5 +1,7 @@
 ﻿using CommandSystem;
 using CustomRolesReConstruct.API.CustomRole;
+using LabApi.Features.Permissions;
+using LabApi.Features.Wrappers;
 using System;
 using System.Linq;
 using System.Text;
@@ -11,10 +13,19 @@ public class ListAbility : ICommand
 {
     public string Command => "abilityList";
     public string[] Aliases => new[] { "abl" };
-    public string Description => "Lists all registered custom items.";
+    public string Description => "Lists all registered CustomAbilities.";
 
     public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
     {
+
+        Player executor = Player.Get(sender);
+
+        if (executor != null && !executor.HasPermissions("customroles.listability"))
+        {
+            response = Main.Instance.Config.DontHaveAccess;
+            return false;
+        }
+
         var items = CustomAbility.Registered;
 
         if (!items.Any())

@@ -13,7 +13,7 @@ public class Spawn : ICommand
 {
     public string Command => "spawn";
     public string[] Aliases => Array.Empty<string>();
-    public string Description => "Comando para spawn customrole";
+    public string Description => "Command for spawn CustomRoles";
 
     public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
     {
