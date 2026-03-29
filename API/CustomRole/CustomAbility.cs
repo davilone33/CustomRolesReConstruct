@@ -10,6 +10,9 @@ namespace CustomRolesReConstruct.API.CustomRole;
 
 public abstract class CustomAbility
 {
+
+#nullable enable
+
     public static HashSet<CustomAbility> Registered { get; } = new();
     public virtual HashSet<uint> TrackedSerials { get; } = new();
     private static readonly Dictionary<uint, CustomAbility?> idLookupTable = new();

@@ -9,7 +9,7 @@ namespace CustomRolesReConstruct;
 
 public class Main : Plugin<Config>
 {
-    public override string Name => "CrimsonCustomRole";
+    public override string Name => "CustomRolesReConstruct";
     public override string Description => "Implementing the creation of CustomRoles for LabAPI";
     public override string Author => "Davilone32";
     public override Version Version => new(1, 2, 2, 3);

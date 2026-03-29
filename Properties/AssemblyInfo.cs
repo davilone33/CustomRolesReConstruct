@@ -4,12 +4,12 @@ using System.Runtime.InteropServices;
 // La información general de un ensamblado se controla mediante el siguiente 
 // conjunto de atributos. Cambie estos valores de atributo para modificar la información
 // asociada con un ensamblado.
-[assembly: AssemblyTitle("CustomRolesCrimsonBreach")]
+[assembly: AssemblyTitle("CustomRolesReConstruct")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("SpaidDidce")]
-[assembly: AssemblyProduct("CustomRolesCrimsonBreach")]
-[assembly: AssemblyCopyright("Copyright © SpaidDidce 2025")]
+[assembly: AssemblyProduct("CustomRolesReConstruct")]
+[assembly: AssemblyCopyright("Copyright © SpaidDidce 2026")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
