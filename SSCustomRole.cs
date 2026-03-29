@@ -1,9 +1,9 @@
-﻿using CustomRolesCrimsonBreach.API.CustomRole;
+﻿using CustomRolesReConstruct.API.CustomRole;
 using LabApi.Features.Wrappers;
 using System.Linq;
 using UserSettings.ServerSpecific;
 
-namespace CustomRolesCrimsonBreach;
+namespace CustomRolesReConstruct;
 
 public class SSCustomRole
 {

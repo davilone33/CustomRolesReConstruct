@@ -1,7 +1,7 @@
 ﻿using MapGeneration;
 using UnityEngine;
 
-namespace CustomRolesCrimsonBreach.API.CustomRole.SpawnAPI;
+namespace CustomRolesReConstruct.API.CustomRole.SpawnAPI;
 
 public class RoomSpawnPoint
 {

@@ -1,10 +1,10 @@
 ﻿using CommandSystem;
-using CustomRolesCrimsonBreach.API.CustomRole;
+using CustomRolesReConstruct.API.CustomRole;
 using System;
 using System.Linq;
 using System.Text;
 
-namespace CustomRolesCrimsonBreach.commands.Child2;
+namespace CustomRolesReConstruct.commands.Child2;
 
 [CommandHandler(typeof(Parent))]
 public class ListAbility : ICommand

@@ -1,9 +1,9 @@
 ﻿using CommandSystem;
-using CustomRolesCrimsonBreach.API.CustomRole;
+using CustomRolesReConstruct.API.CustomRole;
 using LabApi.Features.Wrappers;
 using System;
 
-namespace CustomRolesCrimsonBreach.commands;
+namespace CustomRolesReConstruct.commands;
 
 [CommandHandler(typeof(ClientCommandHandler))]
 public class Info : ICommand

@@ -1,9 +1,9 @@
 ﻿using CommandSystem;
-using CustomRolesCrimsonBreach.commands.Child2;
-using CustomRolesCrimsonBreach.commands.Childs;
+using CustomRolesReConstruct.commands.Child2;
+using CustomRolesReConstruct.commands.Childs;
 using System;
 
-namespace CustomRolesCrimsonBreach.commands;
+namespace CustomRolesReConstruct.commands;
 
 [CommandHandler(typeof(RemoteAdminCommandHandler))]
 public class Parent : ParentCommand

@@ -1,7 +1,7 @@
 ﻿using LabApi.Features.Wrappers;
 using System;
 
-namespace CustomRolesCrimsonBreach.API.CustomRole;
+namespace CustomRolesReConstruct.API.CustomRole;
 
 public class PlayerUseHability : EventArgs
 {

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
-namespace CustomRolesCrimsonBreach.API.CustomRole;
+namespace CustomRolesReConstruct.API.CustomRole;
 
 public abstract class CustomAbility
 {

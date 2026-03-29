@@ -1,11 +1,11 @@
 ﻿global using Logger = LabApi.Features.Console.Logger;
-using CustomRolesCrimsonBreach.Events;
-using CustomRolesCrimsonBreach.Intergrations;
+using CustomRolesReConstruct.Events;
+using CustomRolesReConstruct.Intergrations;
 using LabApi.Loader.Features.Plugins;
 using LabApi.Loader.Features.Plugins.Enums;
 using System;
 
-namespace CustomRolesCrimsonBreach;
+namespace CustomRolesReConstruct;
 
 public class Main : Plugin<Config>
 {

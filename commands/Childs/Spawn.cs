@@ -1,12 +1,12 @@
 ﻿using CommandSystem;
-using CustomRolesCrimsonBreach.Events;
+using CustomRolesReConstruct.Events;
 using LabApi.Features.Permissions;
 using LabApi.Features.Wrappers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CustomRolesCrimsonBreach.commands.Childs;
+namespace CustomRolesReConstruct.commands.Childs;
 
 [CommandHandler(typeof(Parent))]
 public class Spawn : ICommand
@@ -19,7 +19,7 @@ public class Spawn : ICommand
     {
         Player executor = Player.Get(sender);
 
-        if (executor != null && !executor.HasPermissions("customitems.give"))
+        if (executor != null && !executor.HasPermissions("customroles.spawn"))
         {
             response = Main.Instance.Config.DontHaveAccess;
             return false;
@@ -86,6 +86,8 @@ public class Spawn : ICommand
 
         foreach (Player target in targets)
         {
+
+            Main.Instance.playerHandler._assignedRoles[target.UserId] = role;
             role.AddRole(target);
         }
 

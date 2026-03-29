@@ -1,10 +1,10 @@
-﻿using CustomRolesCrimsonBreach.API.CustomRole;
+﻿using CustomRolesReConstruct.API.CustomRole;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace CustomRolesCrimsonBreach.Events;
+namespace CustomRolesReConstruct.Events;
 
 public class CustomRoleHandler
 {

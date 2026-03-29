@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using UnityEngine;
 
-namespace CustomRolesCrimsonBreach;
+namespace CustomRolesReConstruct;
 
 public sealed class Config
 {

@@ -1,10 +1,10 @@
 ﻿using CommandSystem;
-using CustomRolesCrimsonBreach.Events;
+using CustomRolesReConstruct.Events;
 using System;
 using System.Linq;
 using System.Text;
 
-namespace CustomRolesCrimsonBreach.commands.Childs;
+namespace CustomRolesReConstruct.commands.Childs;
 
 
 [CommandHandler(typeof(Parent))]

@@ -5,45 +5,44 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace CustomRolesCrimsonBreach.Intergrations
+namespace CustomRolesReConstruct.Intergrations;
+
+public class CustomItemsAPI
 {
-    public class CustomItemsAPI
+    public static MethodInfo GiveCustomItemMethod;
+    public static bool Found;
+    public static Assembly CustomItemsAPIAssembly;
+
+    public static void Init()
     {
-        public static MethodInfo GiveCustomItemMethod;
-        public static bool Found;
-        public static Assembly CustomItemsAPIAssembly;
-
-        public static void Init()
+        foreach (Plugin plugin in LabApi.Loader.PluginLoader.EnabledPlugins)
         {
-            foreach (Plugin plugin in LabApi.Loader.PluginLoader.EnabledPlugins)
+            if (plugin.Name is "CustomItemsAPI")
             {
-                if (plugin.Name is "CustomItemsAPI")
-                {
-                    plugin.TryGetLoadedAssembly(out CustomItemsAPIAssembly);
-                    Found = true;
-                    break;
-                }
-            }
-
-            if (Found)
-            {
-                Logger.Debug("CustomItemsAPI was found!", Main.Instance.Config.debug);
-                Type customItemType = CustomItemsAPIAssembly.GetType("CustomItemsAPI.CustomItems");
-                if (customItemType is not null)
-                {
-                    List<Type> parameters = [typeof(string), typeof(Player)];
-                    GiveCustomItemMethod = customItemType.GetMethod("AddCustomItem", BindingFlags.Static | BindingFlags.Public, null, parameters.ToArray(), null);
-                }
+                plugin.TryGetLoadedAssembly(out CustomItemsAPIAssembly);
+                Found = true;
+                break;
             }
         }
+
+        if (Found)
+        {
+            Logger.Debug("CustomItemsAPI was found!", Main.Instance.Config.debug);
+            Type customItemType = CustomItemsAPIAssembly.GetType("CustomItemsAPI.CustomItems");
+            if (customItemType is not null)
+            {
+                List<Type> parameters = [typeof(string), typeof(Player)];
+                GiveCustomItemMethod = customItemType.GetMethod("AddCustomItem", BindingFlags.Static | BindingFlags.Public, null, parameters.ToArray(), null);
+            }
+        }
+    }
 #nullable enable
-        public static bool TryGiveCustomItem(string name, Player player)
-        {
-            if (GiveCustomItemMethod is null || !Found)
-                return false;
+    public static bool TryGiveCustomItem(string name, Player player)
+    {
+        if (GiveCustomItemMethod is null || !Found)
+            return false;
 
-            object? result = GiveCustomItemMethod.Invoke(null, [name, player]);
-            return result is not null;
-        }
+        object? result = GiveCustomItemMethod.Invoke(null, [name, player]);
+        return result is not null;
     }
 }

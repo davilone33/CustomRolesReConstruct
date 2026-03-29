@@ -1,7 +1,7 @@
-﻿using CustomRolesCrimsonBreach.API.CustomRole.SpawnAPI;
+﻿using CustomRolesReConstruct.API.CustomRole.SpawnAPI;
 using System.Collections.Generic;
 
-namespace CustomRolesCrimsonBreach.API.CustomRole;
+namespace CustomRolesReConstruct.API.CustomRole;
 
 public class SpawnProperties
 {

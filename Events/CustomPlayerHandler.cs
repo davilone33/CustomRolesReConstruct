@@ -1,5 +1,5 @@
-﻿using CustomRolesCrimsonBreach.API.CustomRole;
-using CustomRolesCrimsonBreach.API.Extension;
+﻿using CustomRolesReConstruct.API.CustomRole;
+using CustomRolesReConstruct.API.Extension;
 using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Features.Wrappers;
 using System;
@@ -7,11 +7,11 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
-namespace CustomRolesCrimsonBreach.Events;
+namespace CustomRolesReConstruct.Events;
 
 public class CustomPlayerHandler
 {
-    private readonly Dictionary<string, CustomRole> _assignedRoles = new();
+    public readonly Dictionary<string, CustomRole> _assignedRoles = new();
     private readonly Dictionary<Type, int> _roleCounts = new();
 
     public void OnKillDeath(PlayerDeathEventArgs ev)

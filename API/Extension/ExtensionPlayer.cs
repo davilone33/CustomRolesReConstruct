@@ -1,6 +1,6 @@
 ﻿using LabApi.Features.Wrappers;
 
-namespace CustomRolesCrimsonBreach.API.Extension;
+namespace CustomRolesReConstruct.API.Extension;
 
 public static class ExtensionPlayer
 {

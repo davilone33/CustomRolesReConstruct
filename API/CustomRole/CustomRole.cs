@@ -1,7 +1,7 @@
-﻿using CustomRolesCrimsonBreach.API.CustomRole.SpawnAPI;
-using CustomRolesCrimsonBreach.API.Extension;
-using CustomRolesCrimsonBreach.Events;
-using CustomRolesCrimsonBreach.Intergrations;
+﻿using CustomRolesReConstruct.API.CustomRole.SpawnAPI;
+using CustomRolesReConstruct.API.Extension;
+using CustomRolesReConstruct.Events;
+using CustomRolesReConstruct.Intergrations;
 using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Arguments.Scp049Events;
 using LabApi.Events.Arguments.ServerEvents;
@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace CustomRolesCrimsonBreach.API.CustomRole;
+namespace CustomRolesReConstruct.API.CustomRole;
 
 public abstract class CustomRole
 {
@@ -28,17 +28,18 @@ public abstract class CustomRole
     public virtual Vector3 Scale { get; } = Vector3.one;
     public abstract SpawnProperties SpawnProperties { get; }
 
-    public virtual bool DisplayRoleMessage { get; set; } = true; 
-    public virtual bool KeepRoleOnEscape { get; set; } = false; 
+    public virtual bool DisplayRoleMessage { get; set; } = true;
+    public virtual bool KeepRoleOnEscape { get; set; } = false;
 
     public virtual List<string> Inventory { get; set; } = new();
     public virtual Dictionary<ItemType, ushort> AmmoItems { get; set; } = new();
 
     public virtual CustomAbility CustomHability { get; set; }
 
-    public virtual int Health { get; set; } = 100; 
-    public virtual int SpawnNumber { get; set; } = 0; 
+    public virtual int Health { get; set; } = 100;
+    public virtual int SpawnNumber { get; set; } = 0;
     public virtual bool GiveOnlyAbility { get; set; } = false;
+
 
     public virtual Team RoleTeam { get; set; } = Team.OtherAlive;
     private bool _eventsRegistered;
@@ -88,7 +89,7 @@ public abstract class CustomRole
         LabApi.Events.Handlers.PlayerEvents.Spawned -= AddRoleEvent;
     }
 
-    private void OnPlayerHurt(PlayerHurtingEventArgs ev) 
+    private void OnPlayerHurt(PlayerHurtingEventArgs ev)
     {
         if (!HasRole(ev.Player, this)) return;
 
@@ -102,11 +103,11 @@ public abstract class CustomRole
         }
     }
 
-    private void OnPlagueHurting(Scp049AttackingEventArgs ev) 
+    private void OnPlagueHurting(Scp049AttackingEventArgs ev)
     {
         if (!HasRole(ev.Player, this)) return;
 
-        if (ev.Player ==  null) return;
+        if (ev.Player == null) return;
         if (RoleTeam == Team.OtherAlive) return;
 
         if (ev.Player.Team == this.RoleTeam)
@@ -127,7 +128,7 @@ public abstract class CustomRole
         }
     }
 
-    private void OnRoundEnd(RoundEndedEventArgs ev) 
+    private void OnRoundEnd(RoundEndedEventArgs ev)
     {
         foreach (var player in Player.ReadyList)
         {
@@ -158,6 +159,7 @@ public abstract class CustomRole
                 player.SetRole(BaseRole);
             }
         }
+
 
         MEC.Timing.CallDelayed(0.4f, () =>
         {
@@ -249,7 +251,7 @@ public abstract class CustomRole
             if (HasRole(ev.Player, this))
             {
                 ev.Player.CustomInfo = $"{this.CustomInfo}";
-            } 
+            }
 
             OnAssigned(ev.Player);
             RoleAdded(ev.Player);
@@ -292,7 +294,7 @@ public abstract class CustomRole
         if (roles.Count == 0)
             _players.Remove(player.UserId);
 
-        if (DisplayRoleMessage) 
+        if (DisplayRoleMessage)
         {
             player.SendHint(Main.Instance.Config.RoleRemoved.Replace("%name%", Name), 10);
         }
@@ -323,4 +325,6 @@ public abstract class CustomRole
 
     protected virtual void OnAssigned(Player player) { }
     protected virtual void OnRemoved(Player player) { }
+
+
 }

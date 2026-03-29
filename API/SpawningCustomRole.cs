@@ -1,7 +1,7 @@
 ﻿using LabApi.Features.Wrappers;
 using System;
 
-namespace CustomRolesCrimsonBreach.API;
+namespace CustomRolesReConstruct.API;
 
 public class SpawningCustomRole : EventArgs
 {
