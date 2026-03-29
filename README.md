@@ -69,14 +69,9 @@ namespace AllCustomRoles.CustomRoles.ClassD
         public override string Name => "Velocista";
         public override string CustomInfo => "Velocista";
         public override uint Id => 2;
-
         public override int Health { get; set; } = 100;
-
         public override RoleTypeId BaseRole => RoleTypeId.ClassD;
-
         public override float SpawnPercentage => 20f;
-
-        public override Vector3 Scale { get; set; } = new Vector3(1f, 1f, 1f);
         public override bool KeepRoleWithScapeOrSomethingIDK => true;
         public override List<string> Inventory { get; set; } = new List<string>()
         {
@@ -130,7 +125,6 @@ namespace AllCustomRoles.CustomRoles.SCP106
         public override uint Id => 300;
         public override RoleTypeId BaseRole => RoleTypeId.Scp106;
         public override float SpewnPorcentage => 50;
-        public override Vector3 Scale { get; set; } = Vector3.one;
         public override CustomHAbility CustomHAbility { get; set; } = new _106StalkieHab();
         public override int Health { get; set; } = 2500;
     }
