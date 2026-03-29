@@ -13,7 +13,6 @@ A API to make a CustomRoles and CustomHabilitys for LabApi
 customroles.spawn
 customroles.list
 customroles.listability
-
 ```
 # Commands
 ```
