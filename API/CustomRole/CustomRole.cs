@@ -95,6 +95,7 @@ public abstract class CustomRole
 
         if (ev.Player == null) return;
         if (ev.Attacker == null) return;
+        if (ev.Player == ev.Attacker) return;
         if (RoleTeam == Team.OtherAlive) return;
 
         if (ev.Attacker.Team == RoleTeam && ev.Player.Team == RoleTeam)
