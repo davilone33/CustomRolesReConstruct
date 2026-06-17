@@ -63,7 +63,7 @@ default_human_spawn_chance: 40
 Advanced Role:
 ```CS
 using CustomPlayerEffects;
-using CustomRolesCrimsonBreach.API.CustomRole;
+using CustomRolesReConstruct.API.CustomRole;
 using LabApi.Events.Arguments.PlayerEvents;
 using PlayerRoles;
 using System.Collections.Generic;
@@ -79,7 +79,13 @@ namespace AllCustomRoles.CustomRoles.ClassD
         public override int Health { get; set; } = 100;
         public override RoleTypeId BaseRole => RoleTypeId.ClassD;
         public override float SpawnPercentage => 20f;
-        public override bool KeepRoleWithScapeOrSomethingIDK => true;
+        public override bool KeepRoleOnEscape => true;
+
+        // Required: every CustomRole must implement SpawnProperties. Leave
+        // StaticSpawnPoints empty if you don't need to reposition the
+        // player on spawn (see the "Room Spawn point" example below).
+        public override SpawnProperties SpawnProperties { get; } = new SpawnProperties();
+
         public override List<string> Inventory { get; set; } = new List<string>()
         {
             $"{ItemType.Adrenaline}",
@@ -119,7 +125,7 @@ namespace AllCustomRoles.CustomRoles.ClassD
 Role Example:
 ```CS
 using AllCustomRoles.HabilidadesCustom;
-using CustomRolesCrimsonBreach.API.CustomRole;
+using CustomRolesReConstruct.API.CustomRole;
 using PlayerRoles;
 using UnityEngine;
 
@@ -131,15 +137,18 @@ namespace AllCustomRoles.CustomRoles.SCP106
         public override string CustomInfo => "Stalkie";
         public override uint Id => 300;
         public override RoleTypeId BaseRole => RoleTypeId.Scp106;
-        public override float SpewnPorcentage => 50;
-        public override CustomHAbility CustomHAbility { get; set; } = new _106StalkieHab();
+        public override float SpawnPercentage => 50;
+        public override CustomAbility CustomHability { get; set; } = new _106StalkieHab();
         public override int Health { get; set; } = 2500;
+
+        // Required: every CustomRole must implement SpawnProperties.
+        public override SpawnProperties SpawnProperties { get; } = new SpawnProperties();
     }
 }
-````
+```
 Skill Example:
 ```CS
-using CustomRolesCrimsonBreach.API.CustomRole;
+using CustomRolesReConstruct.API.CustomRole;
 using LabApi.Features.Wrappers;
 using PlayerRoles.PlayableScps.Scp106;
 using System.Linq;
@@ -208,7 +217,7 @@ Register Role and Skill:
 
 Room Spawn point example:
 ```CS
-        public override SpawnProperties SpawnProperties { get; set; } = new SpawnProperties()
+        public override SpawnProperties SpawnProperties { get; } = new SpawnProperties()
         {
             StaticSpawnPoints = new List<SpawnPoint>
             {
@@ -228,6 +237,3 @@ Room Spawn point example:
             Limit = 1
         };
 ```
-
-
-
