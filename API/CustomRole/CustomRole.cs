@@ -72,7 +72,6 @@ public abstract class CustomRole
 
         LabApi.Events.Handlers.ServerEvents.RoundEnded += OnRoundEnd;
         LabApi.Events.Handlers.PlayerEvents.ChangedRole += PlayerChangeRole;
-        LabApi.Events.Handlers.PlayerEvents.Spawned += AddRoleEvent;
     }
 
     public virtual void UnEventsCustom()
@@ -86,7 +85,6 @@ public abstract class CustomRole
 
         LabApi.Events.Handlers.ServerEvents.RoundEnded -= OnRoundEnd;
         LabApi.Events.Handlers.PlayerEvents.ChangedRole -= PlayerChangeRole;
-        LabApi.Events.Handlers.PlayerEvents.Spawned -= AddRoleEvent;
     }
 
     private void OnPlayerHurt(PlayerHurtingEventArgs ev)
@@ -95,7 +93,6 @@ public abstract class CustomRole
 
         if (ev.Player == null) return;
         if (ev.Attacker == null) return;
-        if (ev.Player == ev.Attacker) return;
         if (RoleTeam == Team.OtherAlive) return;
 
         if (ev.Attacker.Team == RoleTeam && ev.Player.Team == RoleTeam)
@@ -120,11 +117,12 @@ public abstract class CustomRole
 
     private void PlayerChangeRole(PlayerChangedRoleEventArgs ev)
     {
+        if (ev.Player == null) return;
+        if (!HasRole(ev.Player, this)) return;
         if (KeepRoleOnEscape) return;
 
         if (ev.NewRole.RoleTypeId != BaseRole)
         {
-            ev.Player.CustomInfo = null;
             RemoveRole(ev.Player);
         }
     }
@@ -133,9 +131,7 @@ public abstract class CustomRole
     {
         foreach (var player in Player.ReadyList)
         {
-            if (!player.IsCustomRole()) continue;
-
-            player.CustomInfo = null;
+            if (!HasRole(player, this)) continue;
             RemoveRole(player);
         }
     }
@@ -238,27 +234,6 @@ public abstract class CustomRole
         }
     }
 
-    private void AddRoleEvent(PlayerSpawnedEventArgs ev)
-    {
-        if (!HasRole(ev.Player, this)) return;
-
-        MEC.Timing.CallDelayed(0.1f, () =>
-        {
-            if (ev.Player == null || ev.Player.GameObject == null) return;
-
-            ev.Player.Scale = this.Scale;
-            ev.Player.MaxHealth = this.Health;
-            ev.Player.Health = this.Health;
-            if (HasRole(ev.Player, this))
-            {
-                ev.Player.CustomInfo = $"{this.CustomInfo}";
-            }
-
-            OnAssigned(ev.Player);
-            RoleAdded(ev.Player);
-        });
-    }
-
     public virtual void RoleAdded(Player player) { }
     private SpawnPoint? GetRandomSpawnPoint()
     {
@@ -286,14 +261,18 @@ public abstract class CustomRole
         Logger.Debug($"{Name}: TryAddItem error. {itemName} its not valid.", Main.Instance.Config.debug);
         return false;
     }
+
     public virtual void RemoveRole(Player player)
     {
+        if (player == null) return;
         if (!_players.TryGetValue(player.UserId, out var roles)) return;
 
         if (!roles.Remove(this)) return;
 
         if (roles.Count == 0)
             _players.Remove(player.UserId);
+
+        player.CustomInfo = null;
 
         if (DisplayRoleMessage)
         {
@@ -316,6 +295,12 @@ public abstract class CustomRole
     {
         return CustomRoleHandler.Registered.FirstOrDefault(role => CustomRole.HasRole(player, role));
     }
+
+    public static int CountAssigned(Type type)
+    {
+        return _players.Values.Count(roles => roles.Any(r => r.GetType() == type));
+    }
+
     public virtual void HandleRoleChange(Player player, RoleTypeId newRole)
     {
         if (!KeepRoleOnEscape && newRole != BaseRole)
